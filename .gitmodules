@@ -1,6 +1,6 @@
 [submodule "libs/libtesla"]
 	path = libs/libtesla
-	url = https://github.com/TTghostsemir/libtesla
+	url = https://github.com/zdm65477730/libtesla
 [submodule "libs/inih"]
 	path = libs/inih
 	url = https://github.com/TTghostsemir/inih

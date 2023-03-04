@@ -8,6 +8,7 @@
 #include "payload.h"
 
 using namespace fastCFWSwitcher;
+using namespace tsl;
 
 namespace fastCFWSwitcher {
     class ConfigEntry{
@@ -114,14 +115,14 @@ std::list<Element*>* ConfigParser::getElements(){
     FsFileSystem fsSdmc;
 
     if(R_FAILED(fsOpenSdCardFileSystem(&fsSdmc))){
-        setError("open sd failed\n");
+        setError("OpenSDFailedErrorListItemCategoryHeaderText"_tr);
         return nullptr;
     }
 
     /* Open config file. */
     FsFile fileConfig;
     if (R_FAILED(fsFsOpenFile(&fsSdmc, this->filePath, FsOpenMode_Read, &fileConfig))){
-        setError("open config file failed ");
+        setError("OpenConfigFileFailedErrorListItemCategoryHeaderText"_tr);
         fsFsClose(&fsSdmc);
         return nullptr;
     }
@@ -130,7 +131,7 @@ std::list<Element*>* ConfigParser::getElements(){
     /* Get config file size. */
     s64 configFileSize;
     if (R_FAILED(fsFileGetSize(&fileConfig, &configFileSize))){
-        setError("get file size failed\n");
+        setError("GetFileSizeFailedErrorListItemCategoryHeaderText"_tr);
         fsFileClose(&fileConfig);
         fsFsClose(&fsSdmc);
         return nullptr;
@@ -142,7 +143,7 @@ std::list<Element*>* ConfigParser::getElements(){
     u64 readSize;
     Result rc = fsFileRead(&fileConfig, 0, &fileString[0], configFileSize, FsReadOption_None, &readSize);
     if (R_FAILED(rc) || readSize != static_cast<u64>(configFileSize)){
-        setError("read file failed\n");
+        setError("ReadFileFailedErrorListItemCategoryHeaderText"_tr);
         fsFileClose(&fileConfig);
         fsFsClose(&fsSdmc);
         return nullptr;
@@ -157,13 +158,13 @@ std::list<Element*>* ConfigParser::getElements(){
 
     int config_err = ini_parse_string(&fileString[0], handler, &elementsMap);
     if(config_err<0){
-        setError("An error occured.");
+        setError("AnErrorOccuredErrorListItemCategoryHeaderText"_tr);
         return nullptr;
     } else if(config_err>0){
         std::stringstream ss;
         ss<< std::hex << config_err; // int decimal_value
         std::string res ( ss.str() );
-        setError("Bad config file, first error on line "+res);
+        setError("BadConfigFileErrorListItemCategoryHeaderText"_tr + res);
         return nullptr;
     }
     std::list<fastCFWSwitcher::ConfigEntry*>* elementsList = new std::list<fastCFWSwitcher::ConfigEntry*>();
@@ -183,7 +184,7 @@ std::list<Element*>* ConfigParser::getElements(){
             payloadList->push_back(element);
             //setError(x.second->path);
         } else {
-            setError("error "+entry->section);
+            setError("ErrorListItemCategoryHeaderText"_tr + entry->section);
         }
     }
     return payloadList;

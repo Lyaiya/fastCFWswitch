@@ -7,6 +7,7 @@
 #include "ams_bpc.h"
 
 using namespace fastCFWSwitcher;
+using namespace tsl;
 
 #define IRAM_PAYLOAD_MAX_SIZE 0x24000
 #define IRAM_PAYLOAD_BASE 0x40010000
@@ -165,7 +166,7 @@ bool PayloadHandler::loadPayload(fastCFWSwitcher::Payload* payload){
     FsFile fileConfig;
 
     if(R_FAILED(fsOpenSdCardFileSystem(&fsSdmc))){
-        setError("open sd failed\n");
+        setError("OpenSDFailedErrorOverlayFrameSubtitleText"_tr);
         return false;
     }
 
@@ -174,7 +175,7 @@ bool PayloadHandler::loadPayload(fastCFWSwitcher::Payload* payload){
     strcpy(pathBuf, payload->getPath().c_str());//fixes error 0xd401
     Result fsOpenResult = fsFsOpenFile(&fsSdmc, pathBuf, FsOpenMode_Read, &fileConfig);
     if (R_FAILED(fsOpenResult)){
-        setError("open file failed"+std::to_string(fsOpenResult));
+        setError("OpenFileFailedErrorOverlayFrameSubtitleText"_tr + std::to_string(fsOpenResult));
         fsFsClose(&fsSdmc);
         return false;
     }
@@ -183,14 +184,14 @@ bool PayloadHandler::loadPayload(fastCFWSwitcher::Payload* payload){
     /* Get config file size. */
     s64 configFileSize;
     if (R_FAILED(fsFileGetSize(&fileConfig, &configFileSize))){
-        setError("get file size failed\n");
+        setError("GetFileSizeFailedErrorOverlayFrameSubtitleText"_tr);
         fsFileClose(&fileConfig);
         fsFsClose(&fsSdmc);
         return false;
     }
 
     if((u64)configFileSize>sizeof(g_reboot_payload)){
-        setError("to big\n");
+        setError("TooBigErrorOccuredErrorOverlayFrameSubtitleText"_tr);
         fsFileClose(&fileConfig);
         fsFsClose(&fsSdmc);
         return false;
@@ -200,7 +201,7 @@ bool PayloadHandler::loadPayload(fastCFWSwitcher::Payload* payload){
     u64 readSize;
     Result rc = fsFileRead(&fileConfig, 0, g_reboot_payload, configFileSize, FsReadOption_None, &readSize);
     if (R_FAILED(rc) || readSize != static_cast<u64>(configFileSize)){
-        setError("read file failed\n");
+        setError("ReadFileFailedErrorOverlayFrameSubtitleText"_tr);
         fsFileClose(&fileConfig);
         fsFsClose(&fsSdmc);
         return false;
@@ -217,7 +218,7 @@ bool PayloadHandler::loadPayload(fastCFWSwitcher::Payload* payload){
 bool PayloadHandler::doRebootAmsBpc(){
     Result rc = amsBpcSetRebootPayload(g_reboot_payload, IRAM_PAYLOAD_MAX_SIZE);
     if (R_FAILED(rc)) {
-        setError("Failed to set reboot payload"+std::to_string(rc));
+        setError("SetRebootPayloadFailedErrorOverlayFrameSubtitleText"_tr + std::to_string(rc));
         return false;
     }
     spsmShutdown(true);
@@ -245,7 +246,7 @@ void PayloadHandler::doRebootClassic(){
     }
 
     if(result){
-        setError("cmp failed"+std::to_string(result));
+        setError("CompareFailedErrorOverlayFrameSubtitleText"_tr + std::to_string(result));
     } else{
         splSetConfig((SplConfigItem)65001, 2);
     }

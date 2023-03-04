@@ -1,0 +1,22 @@
+{
+    "PluginName": "fastCFWswitch",
+    "ClassicRebootFastCFWSwitchGuiCustomDrawerText": "Classic Reboot",
+    "ListEmptyErrorFastCFWSwitchGuiCustomDrawerText": "List is emtpy/null\nIs the payload list configured?",
+    "SplServiceInitFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "Failed to init spl service\nError code: ",
+    "GetHardwareTypeFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "Failed to get hardware type\nError code: ",
+    "OpenSDFailedErrorListItemCategoryHeaderText": "open sd failed\n",
+    "OpenConfigFileFailedErrorListItemCategoryHeaderText": "open config file failed ",
+    "GetFileSizeFailedErrorListItemCategoryHeaderText": "get file size failed\n",
+    "ReadFileFailedErrorListItemCategoryHeaderText": "read file failed\n",
+    "AnErrorOccuredErrorListItemCategoryHeaderText": "An error occured.",
+    "BadConfigFileErrorListItemCategoryHeaderText": "Bad config file, first error on line ",
+    "ErrorListItemCategoryHeaderText": "error ",
+    "RebootingListItemText": "rebooting",
+    "OpenSDFailedErrorOverlayFrameSubtitleText": "open sd failed\n",
+    "OpenFileFailedErrorOverlayFrameSubtitleText": "open file failed",
+    "GetFileSizeFailedErrorOverlayFrameSubtitleText": "get file size failed\n",
+    "TooBigErrorOccuredErrorOverlayFrameSubtitleText": "to big\n",
+    "ReadFileFailedErrorOverlayFrameSubtitleText": "read file failed\n",
+    "SetRebootPayloadFailedErrorOverlayFrameSubtitleText": "Failed to set reboot payload",
+    "CompareFailedErrorOverlayFrameSubtitleText": "cmp failed"
+}

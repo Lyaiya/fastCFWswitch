@@ -38,9 +38,9 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	fastCFWswitch
-APP_VERSION :=	1.3.1_mod
+APP_VERSION :=	1.3.1
 
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	$(APP_TITLE)
 BUILD		:=	build
 SOURCES		:=	source libs/inih libs/atmos
 DATA		:=	data
@@ -56,9 +56,9 @@ ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -I -D__SWITCH__
+CFLAGS	+=	$(INCLUDE) -I -D__SWITCH__ -DAPPTITLE=\"$(APP_TITLE)\" -DVERSION=\"v$(APP_VERSION)\"
 
-CXXFLAGS	:= $(CFLAGS) -fno-exceptions -std=c++20 -DAPP_TITLE="\"$(APP_TITLE)\"" -DAPP_VERSION="\"v$(APP_VERSION)\""
+CXXFLAGS	:= $(CFLAGS) -fexceptions -std=c++20
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -168,10 +168,17 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@rm -rf $(CURDIR)/SdOut
+	@mkdir -p $(CURDIR)/SdOut/switch/.overlays/lang/$(APP_TITLE)
+	@mkdir -p $(CURDIR)/SdOut/config/$(APP_TITLE)
+	@cp -r $(TARGET).ovl $(CURDIR)/SdOut/switch/.overlays/
+	@cp -r $(CURDIR)/lang/* $(CURDIR)/SdOut/switch/.overlays/lang/$(APP_TITLE)/
+	@cp -r $(CURDIR)/out/config/fastCFWSwitch/config.ini $(CURDIR)/SdOut/config/$(APP_TITLE)/
+	@cd $(CURDIR)/SdOut; zip -r -q -9 $(APP_TITLE).zip switch config; cd $(CURDIR)
 
 #---------------------------------------------------------------------------------
 clean:
-	@rm -fr $(BUILD) $(TARGET).ovl $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+	@rm -fr $(BUILD) $(CURDIR)/SdOut $(TARGET).ovl $(TARGET).nro $(TARGET).nacp $(TARGET).elf
 
 
 #---------------------------------------------------------------------------------

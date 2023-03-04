@@ -6,6 +6,33 @@
 #include "configParser.h"
 #include "ams_bpc.h"
 
+using namespace tsl;
+
+static std::string jsonStr = R"(
+    {
+        "PluginName": "fastCFWswitch",
+        "ClassicRebootFastCFWSwitchGuiCustomDrawerText": "Classic Reboot",
+        "ListEmptyErrorFastCFWSwitchGuiCustomDrawerText": "List is emtpy/null\nIs the payload list configured?",
+        "SplServiceInitFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "Failed to init spl service\nError code: ",
+        "GetHardwareTypeFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "Failed to get hardware type\nError code: ",
+        "OpenSDFailedErrorListItemCategoryHeaderText": "open sd failed\n",
+        "OpenConfigFileFailedErrorListItemCategoryHeaderText": "open config file failed ",
+        "GetFileSizeFailedErrorListItemCategoryHeaderText": "get file size failed\n",
+        "ReadFileFailedErrorListItemCategoryHeaderText": "read file failed\n",
+        "AnErrorOccuredErrorListItemCategoryHeaderText": "An error occured.",
+        "BadConfigFileErrorListItemCategoryHeaderText": "Bad config file, first error on line ",
+        "ErrorListItemCategoryHeaderText": "error ",
+        "RebootingListItemText": "rebooting",
+        "OpenSDFailedErrorOverlayFrameSubtitleText": "open sd failed\n",
+        "OpenFileFailedErrorOverlayFrameSubtitleText": "open file failed",
+        "GetFileSizeFailedErrorOverlayFrameSubtitleText": "get file size failed\n",
+        "TooBigErrorOccuredErrorOverlayFrameSubtitleText": "to big\n",
+        "ReadFileFailedErrorOverlayFrameSubtitleText": "read file failed\n",
+        "SetRebootPayloadFailedErrorOverlayFrameSubtitleText": "Failed to set reboot payload",
+        "CompareFailedErrorOverlayFrameSubtitleText": "cmp failed"
+    }
+)";
+
 class FastCFWSwitchBaseGui : public tsl::Gui {
 protected:    
     tsl::elm::CustomDrawer* getErrorDrawer(std::string message1){
@@ -24,7 +51,7 @@ public:
     // Called when this Gui gets loaded to create the UI
     // Allocate all elements on the heap. libtesla will make sure to clean them up when not needed anymore
     virtual tsl::elm::Element* createUI() override {
-        auto frame = new tsl::elm::OverlayFrame(APP_TITLE, APP_VERSION);
+        auto frame = new tsl::elm::OverlayFrame(APPTITLE, VERSION);
         auto list = new tsl::elm::List();
 
         fastCFWSwitcher::ConfigParser* configParser = new fastCFWSwitcher::ConfigParser(CONFIG_FILE_PATH, list);
@@ -34,7 +61,7 @@ public:
         std::list<fastCFWSwitcher::Element*>* payloadList = configParser->getElements();
         if(useClassic){
             auto infodrawer = new tsl::elm::CustomDrawer([this](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-                renderer->drawString("Classic Reboot", false, x + 3, y + 12, 14, renderer->a(0xFFFF));
+                renderer->drawString("ClassicRebootFastCFWSwitchGuiCustomDrawerText"_tr.c_str(), false, x + 3, y + 12, 14, renderer->a(0xFFFF));
             });
             list->addItem(infodrawer, 12);
         }
@@ -45,7 +72,7 @@ public:
                 list->addItem(item);
             }
         } else {
-            list->addItem(getErrorDrawer("List is emtpy/null\nIs the payload list configured?"), 40);
+            list->addItem(getErrorDrawer("ListEmptyErrorFastCFWSwitchGuiCustomDrawerText"_tr), 40);
         }
 
         // Add the list to the frame for it to be drawn
@@ -60,11 +87,11 @@ class FastCFWSwitchErrorGui : public FastCFWSwitchBaseGui {
 private:
     std::string errorMessage;
 public:
-    FastCFWSwitchErrorGui(std::string errorMessage) { 
+    FastCFWSwitchErrorGui(std::string errorMessage) {
         this->errorMessage = errorMessage;
     }
     virtual tsl::elm::Element* createUI() override {
-        auto frame = new tsl::elm::OverlayFrame(APP_TITLE, APP_VERSION);
+        auto frame = new tsl::elm::OverlayFrame(APPTITLE, VERSION);
         frame->setContent(getErrorDrawer(errorMessage));
         return frame;
     }
@@ -83,8 +110,15 @@ public:
 
         useClassic = isServiceRunning("tx") || isServiceRunning("rnx");
 
+        fsdevMountSdmc();
+        std::string lanPath = std::string("sdmc:/switch/.overlays/lang/") + APPTITLE + "/";
+        tsl::hlp::doWithSmSession([&lanPath]{
+            tsl::tr::InitTrans(lanPath, jsonStr);
+        });
     }  // Called at the start to initialize all services necessary for this Overlay
+
     virtual void exitServices() override {
+        fsdevUnmountDevice("sdmc");
         amsBpcExit();
         spsmExit();
         splExit();
@@ -106,7 +140,7 @@ public:
     virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
         if(R_FAILED(splInitializeResult)){
             //unable to init spl, cant reboot this way
-            return initially<FastCFWSwitchErrorGui>("Failed to init spl service\nError code: "+std::to_string(splInitializeResult));
+            return initially<FastCFWSwitchErrorGui>("SplServiceInitFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText"_tr + std::to_string(splInitializeResult));
         }
         //amsBpc is initialiced here, since the sm session is already closed by now
         if(R_FAILED(spsmInitializeResult) || R_FAILED(amsBpcInitialize())){
@@ -117,7 +151,7 @@ public:
         Result rc = 0;
         u64 hardware_type;
         if (R_FAILED(rc = splGetConfig(SplConfigItem_HardwareType, &hardware_type))) {
-            return initially<FastCFWSwitchErrorGui>("Failed to get hardware type\nError code: "+std::to_string(rc));
+            return initially<FastCFWSwitchErrorGui>("GetHardwareTypeFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText"_tr + std::to_string(rc));
         }
         const bool is_erista = hardware_type == 0 || hardware_type == 1;
         if(!is_erista) {

@@ -1,0 +1,22 @@
+{
+    "PluginName": "快速固件切換",
+    "ClassicRebootFastCFWSwitchGuiCustomDrawerText": "經典重啟",
+    "ListEmptyErrorFastCFWSwitchGuiCustomDrawerText": "列表為空\n是否配置了載荷列表？",
+    "SplServiceInitFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "無法初始化spl服務\n錯誤代碼：",
+    "GetHardwareTypeFailedFastCFWSwitchOverlayFastCFWSwitchErrorGuiText": "獲取硬件類型失敗\n錯誤代碼：",
+    "OpenSDFailedErrorListItemCategoryHeaderText": "打開SD卡失敗\n",
+    "OpenConfigFileFailedErrorListItemCategoryHeaderText": "打開配置文件失敗",
+    "GetFileSizeFailedErrorListItemCategoryHeaderText": "獲取文件大小失敗\n",
+    "ReadFileFailedErrorListItemCategoryHeaderText": "讀取文件失敗\n",
+    "AnErrorOccuredErrorListItemCategoryHeaderText": "發生錯誤。",
+    "BadConfigFileErrorListItemCategoryHeaderText": "錯誤的配置文件，第一個錯誤在行 ",
+    "ErrorListItemCategoryHeaderText": "錯誤 ",
+    "RebootingListItemText": "正在重啟",
+    "OpenSDFailedErrorOverlayFrameSubtitleText": "打開SD卡失敗\n",
+    "OpenFileFailedErrorOverlayFrameSubtitleText": "打開文件失敗",
+    "GetFileSizeFailedErrorOverlayFrameSubtitleText": "獲取文件大小失敗\n",
+    "TooBigErrorOccuredErrorOverlayFrameSubtitleText": "太大\n",
+    "ReadFileFailedErrorOverlayFrameSubtitleText": "讀取文件失敗\n",
+    "SetRebootPayloadFailedErrorOverlayFrameSubtitleText": "設置重啟載荷失敗",
+    "CompareFailedErrorOverlayFrameSubtitleText": "比較失敗"
+}
