@@ -1,0 +1,27 @@
+---
+  name: release
+
+  on:
+    workflow_dispatch:
+    push:
+      tags:
+        - '*'
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      container: devkitpro/devkita64
+  
+      steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build project
+        run: make
+
+      - name: Release
+        uses: mikepenz/action-gh-release@v1
+        with:
+          files: SdOut/QuickNTP.zip
